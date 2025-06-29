@@ -1,5 +1,7 @@
 @echo off
 echo Pastikan file SFX berada di dalam folder 'sfx/' untuk dapat dibaca dengan benar.
+echo Pastikan file VFX berada di dalam folder 'vfx/' untuk dapat dibaca dengan benar.
+echo Copyright 2025 Aldimenur
 setlocal enabledelayedexpansion
 
 :: Check if Node.js is installed

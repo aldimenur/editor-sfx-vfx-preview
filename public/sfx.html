@@ -7,37 +7,48 @@
 
   </head>
   <body>
-    <h1>Sound FX Preview</h1>
-
-    <div class="tabs">
-      <a href="index.html" class="tab-btn">Home</a>
-      <a href="sfx.html" class="tab-btn">Sound FX</a>
-      <a href="vfx.html" class="tab-btn">Video FX</a>
-    </div>
-
     <div id="sfx-tab" class="tab-content active">
-      <div class="controls-container">
-        <input type="text" id="search-sfx" placeholder="Search sound..." />
-        <div class="view-controls">
-          <select id="page-size-sfx">
-            <option value="6">6 per page</option>
-            <option value="12">12 per page</option>
-            <option value="24">24 per page</option>
-          </select>
-          <select id="layout-select-sfx">
-            <option value="1">1 Column</option>
-            <option value="2" selected>2 Columns</option>
-            <option value="3">3 Columns</option>
-            <option value="4">4 Columns</option>
-          </select>
+      <div class="two-column-layout">
+        <div class="controls-column">
+          <h1>Sound FX Preview</h1>
+          <div class="controls-container">
+            <!-- label for search -->
+            <label for="search-sfx">Search:</label>
+            <input type="text" id="search-sfx" placeholder="Search sound..." />
+            <div class="view-controls">
+              <!-- label for page size and layout select -->
+              <label for="page-size-sfx">Page Size:</label>
+              <select id="page-size-sfx">
+                <option value="6">6 per page</option>
+                <option value="12">12 per page</option>
+                <option value="24">24 per page</option>
+              </select>
+              <label for="layout-select-sfx">Layout:</label>
+              <select id="layout-select-sfx">
+                <option value="1">1 Column</option>
+                <option value="2" selected>2 Columns</option>
+                <option value="3">3 Columns</option>
+                <option value="4">4 Columns</option>
+              </select>
+            </div>
+            <div class="pagination">
+              <button id="prevPage" disabled>Previous</button>
+              <button id="nextPage" disabled>Next</button>
+            </div>
+            <div class="pagination-info" id="paginationInfo"></div>
+          </div>
+          <div class="tabs">
+            <a href="index.html" class="tab-btn">Home</a>
+            <a href="sfx.html" class="tab-btn">Sound FX</a>
+            <a href="vfx.html" class="tab-btn">Video FX</a>
+          </div>
+
+         
+        </div>
+        <div class="results-column">
+          <div id="results" class="container"></div>
         </div>
       </div>
-      <div id="results" class="container"></div>
-      <div class="pagination">
-        <button id="prevPage" disabled>Previous</button>
-        <button id="nextPage" disabled>Next</button>
-      </div>
-      <div class="pagination-info" id="paginationInfo"></div>
     </div>
 
     <script src="https://unpkg.com/wavesurfer.js"></script>

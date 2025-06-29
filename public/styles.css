@@ -1,6 +1,5 @@
 body {
     font-family: Arial, sans-serif;
-    max-width: 1200px;
     margin: 0 auto;
     padding: 20px;
     background-color: #f4f4f4;
@@ -27,8 +26,10 @@ h1 {
 
 .tab-btn {
     display: inline-block;
-    padding: 10px 20px;
     background-color: #3498db;
+    min-width: 120px;
+    text-align: center;
+    padding: 10px 4px;
     color: white;
     text-decoration: none;
     border-radius: 8px;
@@ -86,7 +87,6 @@ h1 {
 
 /* Existing styles */
 input[type="text"] {
-    width: 100%;
     padding: 10px;
     margin-bottom: 20px;
     border: 1px solid #ddd;
@@ -445,8 +445,6 @@ button:disabled {
 
 .view-controls {
     display: flex;
-    justify-content: space-between;
-    align-items: center;
     gap: 15px;
 }
 
@@ -462,4 +460,62 @@ button:disabled {
 .view-controls select:hover {
     border-color: #3498db;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.two-column-layout {
+    display: flex;
+    gap: 20px;
+}
+
+.controls-column {
+    min-width: 300px;
+    max-width: 300px;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+}
+
+.controls-column h1 {
+    text-align: left;
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.controls-column .tabs {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.controls-column .tab-btn {
+    width: 100%;
+    text-align: center;
+}
+
+.results-column {
+    flex-grow: 1;
+}
+
+.controls-column .controls-container {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+}
+
+.controls-column .view-controls {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+@media (max-width: 768px) {
+    .two-column-layout {
+        flex-direction: column;
+    }
+    
+    .controls-column {
+        width: 100%;
+    }
 }

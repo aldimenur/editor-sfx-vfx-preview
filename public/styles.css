@@ -208,8 +208,7 @@ button:disabled {
 
 .footer {
     text-align: center;
-    margin-top: 20px;
-    color: #666;
+    padding: 20px;
 }
 
 .home-links {
@@ -373,5 +372,66 @@ button:disabled {
     
     .tutorial-card, .quick-link {
         width: 100%;
+    }
+}
+
+/* Gaya untuk Kontak Footer */
+.contact-section {
+    margin-top: 20px;
+}
+
+.contact-section h4 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.contact-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+}
+
+.contact-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 8px;
+    font-weight: bold;
+    transition: all 0.3s ease;
+    color: white;
+}
+
+.contact-btn i {
+    margin-right: 10px;
+    font-size: 1.2em;
+}
+
+.contact-btn.instagram {
+    background-color: #E1306C;
+}
+
+.contact-btn.instagram:hover {
+    background-color: #C13584;
+}
+
+.contact-btn.whatsapp {
+    background-color: #25D366;
+}
+
+.contact-btn.whatsapp:hover {
+    background-color: #128C7E;
+}
+
+/* Responsive untuk tombol kontak */
+@media (max-width: 600px) {
+    .contact-buttons {
+        flex-direction: column;
+    }
+    
+    .contact-btn {
+        width: 100%;
+        justify-content: center;
+        margin-bottom: 10px;
     }
 }

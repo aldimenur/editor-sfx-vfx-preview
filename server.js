@@ -17,7 +17,11 @@ function getFiles(directory, query, page = 1, pageSize = 12) {
       .readdirSync(directory)
       .filter((file) => {
         const lowercaseQuery = query.toLowerCase();
-        return file.toLowerCase().includes(lowercaseQuery);
+        const allowedExtensions = [".mp3", ".wav", ".ogg", ".m4a"];
+        return (
+          allowedExtensions.some((ext) => file.toLowerCase().endsWith(ext)) &&
+          file.toLowerCase().includes(lowercaseQuery)
+        );
       })
       .map((file) => ({
         name: file,

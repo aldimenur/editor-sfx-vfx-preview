@@ -1,8 +1,13 @@
 // server.js
-const express = require("express");
-const fs = require("fs");
-const path = require("path");
-const { exec } = require("child_process");
+import express from "express";
+import fs from "fs";
+import path from "path";
+import { exec } from "child_process";
+import { fileURLToPath } from "url";
+
+// Get the directory name of the current module
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -249,6 +254,16 @@ app.get("/api/file-count", (req, res) => {
   }
 });
 
-app.listen(PORT, () =>
-  console.log(`Server running on http://localhost:${PORT}`)
-);
+// Start the server
+const server = app.listen(PORT, async () => {
+  console.log(`Server running on http://localhost:${PORT}`);
+
+  // Dynamically import the open package
+  try {
+    const open = (await import("open")).default;
+    // Automatically open the default browser
+    open(`http://localhost:${PORT}`);
+  } catch (error) {
+    console.error("Failed to open browser:", error);
+  }
+});

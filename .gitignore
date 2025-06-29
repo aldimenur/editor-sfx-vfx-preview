@@ -51,4 +51,5 @@ sfx/*
 vfx/*
 !vfx/.gitkeep 
 
+package-lock.json
 

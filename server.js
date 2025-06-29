@@ -255,15 +255,6 @@ app.get("/api/file-count", (req, res) => {
 });
 
 // Start the server
-const server = app.listen(PORT, async () => {
+const server = app.listen(PORT, () => {
   console.log(`Server running on http://localhost:${PORT}`);
-
-  // Dynamically import the open package
-  try {
-    const open = (await import("open")).default;
-    // Automatically open the default browser
-    open(`http://localhost:${PORT}`);
-  } catch (error) {
-    console.error("Failed to open browser:", error);
-  }
 });

@@ -68,6 +68,11 @@ function openFileLocation(fileName, isVfx = false) {
 // Update pagination controls
 function updatePaginationControls(isVfx = false) {
   if (isVfx) {
+    console.log("VFX Pagination Debug:", {
+      currentVfxPage,
+      totalVfxPages,
+      vfxDataTotal: vfxData.total,
+    });
     const prevPageBtn = document.getElementById("prevPageVfx");
     const nextPageBtn = document.getElementById("nextPageVfx");
     const paginationInfo = document.getElementById("paginationInfoVfx");
@@ -76,6 +81,11 @@ function updatePaginationControls(isVfx = false) {
     nextPageBtn.disabled = currentVfxPage >= totalVfxPages;
     paginationInfo.textContent = `Page ${currentVfxPage} of ${totalVfxPages} (${vfxData.total} videos)`;
   } else {
+    console.log("SFX Pagination Debug:", {
+      currentPage,
+      totalPages,
+      dataTotal: data.total,
+    });
     const prevPageBtn = document.getElementById("prevPage");
     const nextPageBtn = document.getElementById("nextPage");
     const paginationInfo = document.getElementById("paginationInfo");
@@ -207,16 +217,30 @@ function loadSounds(query = "", page = 1) {
 
 // Load VFX with optional search and pagination
 function loadVfx(query = "", page = 1) {
+  console.log(`Loading VFX - Query: ${query}, Page: ${page}`);
   const results = document.getElementById("vfx-results");
+  results.innerHTML = "Loading videos..."; // Add loading indicator
 
   fetch(`/api/vfx?q=${encodeURIComponent(query)}&page=${page}`)
-    .then((res) => res.json())
+    .then((res) => {
+      if (!res.ok) {
+        throw new Error(`HTTP error! status: ${res.status}`);
+      }
+      return res.json();
+    })
     .then((responseData) => {
+      console.log("VFX Response Data:", responseData);
       vfxData = responseData;
       currentVfxPage = vfxData.currentPage;
       totalVfxPages = vfxData.totalPages;
 
-      results.innerHTML = "";
+      results.innerHTML = ""; // Clear loading indicator
+
+      if (vfxData.videos.length === 0) {
+        results.innerHTML = "No videos found.";
+        return;
+      }
+
       vfxData.videos.forEach((video) => {
         const box = document.createElement("div");
         box.className = "video-box";
@@ -275,6 +299,10 @@ function loadVfx(query = "", page = 1) {
       });
 
       updatePaginationControls(true);
+    })
+    .catch((error) => {
+      console.error("Error loading VFX:", error);
+      results.innerHTML = `Error loading VFX: ${error.message}`;
     });
 }
 

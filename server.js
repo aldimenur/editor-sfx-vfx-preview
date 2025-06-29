@@ -52,7 +52,7 @@ function getFiles(directory, query, page = 1, pageSize = 12) {
 }
 
 // Helper function to get VFX files with pagination and search
-function getVfxFiles(directory, query, page = 1, pageSize = 12) {
+function getVfxFiles(directory, query, page = 1, pageSize = 6) {
   try {
     let files = fs
       .readdirSync(directory)

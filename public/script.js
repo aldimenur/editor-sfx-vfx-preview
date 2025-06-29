@@ -1,8 +1,32 @@
+// Utility function to get URL parameters
+function getUrlParameter(name) {
+  name = name.replace(/[\[]/, "\\[").replace(/[\]]/, "\\]");
+  const regex = new RegExp("[\\?&]" + name + "=([^&#]*)");
+  const results = regex.exec(location.search);
+  return results === null ? "" : decodeURIComponent(results[1]);
+}
+
+// Utility function to update URL parameters
+function updateUrlParameters(params) {
+  const url = new URL(window.location.href);
+  Object.keys(params).forEach((key) => {
+    if (params[key] !== null && params[key] !== undefined) {
+      url.searchParams.set(key, params[key]);
+    } else {
+      url.searchParams.delete(key);
+    }
+  });
+  window.history.pushState({}, "", url);
+}
+
 // Global variables
-let currentPage = 1;
+let currentPage = parseInt(getUrlParameter("page") || 1);
 let totalPages = 1;
-let currentVfxPage = 1;
+let currentVfxPage = parseInt(getUrlParameter("vfxPage") || 1);
 let totalVfxPages = 1;
+let currentPageSize = parseInt(getUrlParameter("pageSize") || 12);
+let currentVfxPageSize = parseInt(getUrlParameter("vfxPageSize") || 6);
+let currentLayout = parseInt(getUrlParameter("layout") || 2);
 let data = {};
 let vfxData = {};
 
@@ -68,11 +92,6 @@ function openFileLocation(fileName, isVfx = false) {
 // Update pagination controls
 function updatePaginationControls(isVfx = false) {
   if (isVfx) {
-    console.log("VFX Pagination Debug:", {
-      currentVfxPage,
-      totalVfxPages,
-      vfxDataTotal: vfxData.total,
-    });
     const prevPageBtn = document.getElementById("prevPageVfx");
     const nextPageBtn = document.getElementById("nextPageVfx");
     const paginationInfo = document.getElementById("paginationInfoVfx");
@@ -81,11 +100,6 @@ function updatePaginationControls(isVfx = false) {
     nextPageBtn.disabled = currentVfxPage >= totalVfxPages;
     paginationInfo.textContent = `Page ${currentVfxPage} of ${totalVfxPages} (${vfxData.total} videos)`;
   } else {
-    console.log("SFX Pagination Debug:", {
-      currentPage,
-      totalPages,
-      dataTotal: data.total,
-    });
     const prevPageBtn = document.getElementById("prevPage");
     const nextPageBtn = document.getElementById("nextPage");
     const paginationInfo = document.getElementById("paginationInfo");
@@ -96,12 +110,73 @@ function updatePaginationControls(isVfx = false) {
   }
 }
 
+// Function to update grid layout
+function updateGridLayout(layout) {
+  const container = document.querySelector(".container");
+  if (container) {
+    container.style.gridTemplateColumns = `repeat(${layout}, minmax(0, 1fr))`;
+  }
+
+  // Update URL parameter
+  updateUrlParameters({ layout });
+}
+
+// Function to update page size
+function updatePageSize(pageType, size) {
+  if (pageType === "sfx") {
+    currentPageSize = size;
+    currentPage = 1; // Reset to first page
+
+    // Update URL parameters
+    updateUrlParameters({
+      pageSize: size,
+      page: 1,
+    });
+
+    loadSounds(
+      document.getElementById("search-sfx").value,
+      currentPage,
+      currentPageSize
+    );
+  } else if (pageType === "vfx") {
+    currentVfxPageSize = size;
+    currentVfxPage = 1; // Reset to first page
+
+    // Update URL parameters
+    updateUrlParameters({
+      vfxPageSize: size,
+      vfxPage: 1,
+    });
+
+    loadVfx(
+      document.getElementById("search-vfx").value,
+      currentVfxPage,
+      currentVfxPageSize
+    );
+  }
+}
+
 // Load sounds with optional search and pagination
-function loadSounds(query = "", page = 1) {
+function loadSounds(
+  query = "",
+  page = currentPage,
+  pageSize = currentPageSize
+) {
   const results = document.getElementById("results");
   results.innerHTML = "Loading sounds..."; // Add loading indicator
 
-  fetch(`/api/sounds?q=${encodeURIComponent(query)}&page=${page}`)
+  // Update URL parameters
+  updateUrlParameters({
+    q: query || null,
+    page,
+    pageSize,
+  });
+
+  fetch(
+    `/api/sounds?q=${encodeURIComponent(
+      query
+    )}&page=${page}&pageSize=${pageSize}`
+  )
     .then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -208,6 +283,7 @@ function loadSounds(query = "", page = 1) {
       });
 
       updatePaginationControls();
+      updateGridLayout(currentLayout);
     })
     .catch((error) => {
       console.error("Error loading sounds:", error);
@@ -216,12 +292,24 @@ function loadSounds(query = "", page = 1) {
 }
 
 // Load VFX with optional search and pagination
-function loadVfx(query = "", page = 1) {
-  console.log(`Loading VFX - Query: ${query}, Page: ${page}`);
+function loadVfx(
+  query = "",
+  page = currentVfxPage,
+  pageSize = currentVfxPageSize
+) {
   const results = document.getElementById("vfx-results");
   results.innerHTML = "Loading videos..."; // Add loading indicator
 
-  fetch(`/api/vfx?q=${encodeURIComponent(query)}&page=${page}`)
+  // Update URL parameters
+  updateUrlParameters({
+    vfxQ: query || null,
+    vfxPage: page,
+    vfxPageSize: pageSize,
+  });
+
+  fetch(
+    `/api/vfx?q=${encodeURIComponent(query)}&page=${page}&pageSize=${pageSize}`
+  )
     .then((res) => {
       if (!res.ok) {
         throw new Error(`HTTP error! status: ${res.status}`);
@@ -229,7 +317,6 @@ function loadVfx(query = "", page = 1) {
       return res.json();
     })
     .then((responseData) => {
-      console.log("VFX Response Data:", responseData);
       vfxData = responseData;
       currentVfxPage = vfxData.currentPage;
       totalVfxPages = vfxData.totalPages;
@@ -299,6 +386,7 @@ function loadVfx(query = "", page = 1) {
       });
 
       updatePaginationControls(true);
+      updateGridLayout(currentLayout);
     })
     .catch((error) => {
       console.error("Error loading VFX:", error);
@@ -370,28 +458,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchSfx = document.getElementById("search-sfx");
     const prevPageBtn = document.getElementById("prevPage");
     const nextPageBtn = document.getElementById("nextPage");
+    const pageSizeSelect = document.getElementById("page-size-sfx");
+    const layoutSelect = document.getElementById("layout-select-sfx");
+
+    // Set initial values from URL parameters
+    searchSfx.value = getUrlParameter("q") || "";
 
     // Initial load of sounds
-    loadSounds();
+    loadSounds(searchSfx.value, currentPage, currentPageSize);
+
+    // Page Size Selection
+    if (pageSizeSelect) {
+      pageSizeSelect.value = currentPageSize;
+      pageSizeSelect.addEventListener("change", (e) => {
+        updatePageSize("sfx", parseInt(e.target.value));
+      });
+    }
+
+    // Layout Selection
+    if (layoutSelect) {
+      layoutSelect.value = currentLayout;
+      layoutSelect.addEventListener("change", (e) => {
+        currentLayout = parseInt(e.target.value);
+        updateGridLayout(currentLayout);
+      });
+    }
 
     // Search functionality
     searchSfx.addEventListener("input", () => {
       currentPage = 1; // Reset to first page on new search
-      loadSounds(searchSfx.value);
+      loadSounds(searchSfx.value, currentPage, currentPageSize);
     });
 
     // Pagination
     prevPageBtn.addEventListener("click", () => {
       if (currentPage > 1) {
         currentPage--;
-        loadSounds(searchSfx.value, currentPage);
+        loadSounds(searchSfx.value, currentPage, currentPageSize);
       }
     });
 
     nextPageBtn.addEventListener("click", () => {
       if (currentPage < totalPages) {
         currentPage++;
-        loadSounds(searchSfx.value, currentPage);
+        loadSounds(searchSfx.value, currentPage, currentPageSize);
       }
     });
   }
@@ -401,28 +511,50 @@ document.addEventListener("DOMContentLoaded", () => {
     const searchVfx = document.getElementById("search-vfx");
     const prevPageVfxBtn = document.getElementById("prevPageVfx");
     const nextPageVfxBtn = document.getElementById("nextPageVfx");
+    const pageSizeSelect = document.getElementById("page-size-vfx");
+    const layoutSelect = document.getElementById("layout-select-vfx");
+
+    // Set initial values from URL parameters
+    searchVfx.value = getUrlParameter("vfxQ") || "";
 
     // Initial load of VFX
-    loadVfx();
+    loadVfx(searchVfx.value, currentVfxPage, currentVfxPageSize);
+
+    // Page Size Selection
+    if (pageSizeSelect) {
+      pageSizeSelect.value = currentVfxPageSize;
+      pageSizeSelect.addEventListener("change", (e) => {
+        updatePageSize("vfx", parseInt(e.target.value));
+      });
+    }
+
+    // Layout Selection
+    if (layoutSelect) {
+      layoutSelect.value = currentLayout;
+      layoutSelect.addEventListener("change", (e) => {
+        currentLayout = parseInt(e.target.value);
+        updateGridLayout(currentLayout);
+      });
+    }
 
     // Search functionality
     searchVfx.addEventListener("input", () => {
       currentVfxPage = 1; // Reset to first page on new search
-      loadVfx(searchVfx.value);
+      loadVfx(searchVfx.value, currentVfxPage, currentVfxPageSize);
     });
 
     // Pagination
     prevPageVfxBtn.addEventListener("click", () => {
       if (currentVfxPage > 1) {
         currentVfxPage--;
-        loadVfx(searchVfx.value, currentVfxPage);
+        loadVfx(searchVfx.value, currentVfxPage, currentVfxPageSize);
       }
     });
 
     nextPageVfxBtn.addEventListener("click", () => {
       if (currentVfxPage < totalVfxPages) {
         currentVfxPage++;
-        loadVfx(searchVfx.value, currentVfxPage);
+        loadVfx(searchVfx.value, currentVfxPage, currentVfxPageSize);
       }
     });
   }

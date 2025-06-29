@@ -39,6 +39,7 @@ function getFiles(directory, query, page = 1, pageSize = 12) {
       total,
       currentPage: page,
       totalPages,
+      pageSize,
     };
   } catch (error) {
     console.error("Error reading directory:", error);
@@ -47,6 +48,7 @@ function getFiles(directory, query, page = 1, pageSize = 12) {
       total: 0,
       currentPage: 1,
       totalPages: 1,
+      pageSize,
     };
   }
 }
@@ -80,6 +82,7 @@ function getVfxFiles(directory, query, page = 1, pageSize = 6) {
       total,
       currentPage: page,
       totalPages,
+      pageSize,
     };
   } catch (error) {
     console.error("Error reading VFX directory:", error);
@@ -88,21 +91,32 @@ function getVfxFiles(directory, query, page = 1, pageSize = 6) {
       total: 0,
       currentPage: 1,
       totalPages: 1,
+      pageSize,
     };
   }
 }
 
 // API endpoint for sounds
 app.get("/api/sounds", (req, res) => {
-  const { q = "", page = 1 } = req.query;
-  const result = getFiles(path.join(__dirname, "sfx"), q, parseInt(page));
+  const { q = "", page = 1, pageSize = 12 } = req.query;
+  const result = getFiles(
+    path.join(__dirname, "sfx"),
+    q,
+    parseInt(page),
+    parseInt(pageSize)
+  );
   res.json(result);
 });
 
 // API endpoint for VFX
 app.get("/api/vfx", (req, res) => {
-  const { q = "", page = 1 } = req.query;
-  const result = getVfxFiles(path.join(__dirname, "vfx"), q, parseInt(page));
+  const { q = "", page = 1, pageSize = 6 } = req.query;
+  const result = getVfxFiles(
+    path.join(__dirname, "vfx"),
+    q,
+    parseInt(page),
+    parseInt(pageSize)
+  );
   res.json(result);
 });
 

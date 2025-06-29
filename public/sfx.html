@@ -16,7 +16,22 @@
     </div>
 
     <div id="sfx-tab" class="tab-content active">
-      <input type="text" id="search-sfx" placeholder="Search sound..." />
+      <div class="controls-container">
+        <input type="text" id="search-sfx" placeholder="Search sound..." />
+        <div class="view-controls">
+          <select id="page-size-sfx">
+            <option value="6">6 per page</option>
+            <option value="12">12 per page</option>
+            <option value="24">24 per page</option>
+          </select>
+          <select id="layout-select-sfx">
+            <option value="1">1 Column</option>
+            <option value="2" selected>2 Columns</option>
+            <option value="3">3 Columns</option>
+            <option value="4">4 Columns</option>
+          </select>
+        </div>
+      </div>
       <div id="results" class="container"></div>
       <div class="pagination">
         <button id="prevPage" disabled>Previous</button>

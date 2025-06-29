@@ -43,7 +43,12 @@ desktop.ini
 .cache/
 .next/
 .nuxt/
-.serverless/ 
+.serverless/
 
-sfx/
-vfx/
+# Sound and VFX directories
+sfx/*
+!sfx/.gitkeep
+vfx/*
+!vfx/.gitkeep 
+
+

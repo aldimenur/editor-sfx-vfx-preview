@@ -46,13 +46,16 @@ h1 {
 }
 
 .tab-btn::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(120deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
     transition: all 0.6s ease;
 }
 
@@ -94,8 +97,15 @@ input[type="text"] {
     width: 100%;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     overflow: hidden;
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
+}
+
+.wave-box:hover {
+    border: 1px solid #3498db;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 .wave-header {
@@ -179,8 +189,15 @@ button:disabled {
 .video-box {
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border: 1px solid #ddd;
+    transition: all 0.3s ease;
     overflow: hidden;
+}
+
+.video-box:hover {
+    border: 1px solid #3498db;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transform: translateY(-2px);
 }
 
 .video-preview {
@@ -205,7 +222,7 @@ button:disabled {
 .home-btn {
     display: inline-block;
     padding: 15px 30px;
-    background-color: #4CAF50;
+    background-color: #4caf50;
     color: white;
     text-decoration: none;
     border-radius: 10px;
@@ -220,13 +237,16 @@ button:disabled {
 }
 
 .home-btn::before {
-    content: '';
+    content: "";
     position: absolute;
     top: 0;
     left: -100%;
     width: 100%;
     height: 100%;
-    background: linear-gradient(120deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+    background: linear-gradient(120deg,
+            transparent,
+            rgba(255, 255, 255, 0.3),
+            transparent);
     transition: all 0.6s ease;
 }
 
@@ -247,4 +267,111 @@ button:disabled {
     font-weight: normal;
     text-transform: none;
     letter-spacing: normal;
+}
+
+/* Tambahan untuk tutorial dan quick links */
+.tutorial-container {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 12px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.tutorial-section {
+    margin-bottom: 30px;
+}
+
+.tutorial-section h2 {
+    text-align: center;
+    color: #2c3e50;
+    margin-bottom: 25px;
+    font-size: 2em;
+}
+
+.tutorial-card {
+    background-color: white;
+    border-radius: 10px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+}
+
+.tutorial-card:hover {
+    transform: translateY(-5px);
+}
+
+.tutorial-card h3 {
+    color: #3498db;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #3498db;
+    padding-bottom: 10px;
+}
+
+.tutorial-card ol {
+    padding-left: 30px;
+}
+
+.tutorial-card ol li {
+    margin-bottom: 10px;
+    line-height: 1.6;
+}
+
+.quick-links {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.quick-link {
+    flex: 1;
+    background-color: white;
+    border-radius: 10px;
+    padding: 25px;
+    text-align: center;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+}
+
+.quick-link:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+}
+
+.quick-link h3 {
+    color: #2c3e50;
+    margin-bottom: 15px;
+}
+
+.quick-link p {
+    color: #7f8c8d;
+    margin-bottom: 20px;
+}
+
+.btn-explore {
+    display: inline-block;
+    padding: 12px 25px;
+    background-color: #3498db;
+    color: white;
+    text-decoration: none;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+.btn-explore:hover {
+    background-color: #2980b9;
+    transform: translateY(-3px);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .quick-links {
+        flex-direction: column;
+    }
+    
+    .tutorial-card, .quick-link {
+        width: 100%;
+    }
 }

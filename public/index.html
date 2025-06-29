@@ -1,40 +1,62 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sound & Video FX Preview Firasat</title>
+    <title>Firasat - Sound and Video FX</title>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <h1>Sound & Video FX Preview</h1>
+    <h1>Firasat: Sound dan Video Effects</h1>
 
-    <div class="home-links">
-      <div
-        style="
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          flex-direction: column;
-        "
-      >
-        <span class="file-count" id="sfx-count">(Loading...)</span>
-        <a href="sfx.html" class="home-btn"> Sound FX </a>
+    <div class="tabs">
+      <a href="index.html" class="tab-btn active">Beranda</a>
+      <a href="sfx.html" class="tab-btn">Sound FX</a>
+      <a href="vfx.html" class="tab-btn">Video FX</a>
+    </div>
+
+    <div class="tutorial-container">
+      <div class="tutorial-section">
+        <h2>Tutorial Memasukkan SFX dan VFX</h2>
+        
+        <div class="tutorial-card">
+          <h3>Cara Memasukkan Sound FX</h3>
+          <ol>
+            <li>Buka folder `/sfx` di direktori project Anda</li>
+            <li>Pastikan file suara memiliki format yang didukung (mp3, wav, dll)</li>
+            <li>Salin file suara ke dalam folder `/sfx`</li>
+            <li>Nama file sebaiknya deskriptif, contoh: `explosion_loud.mp3`</li>
+          </ol>
+        </div>
+
+        <div class="tutorial-card">
+          <h3>Cara Memasukkan Video FX</h3>
+          <ol>
+            <li>Buka folder `/vfx` di direktori project Anda</li>
+            <li>Pastikan file video memiliki format yang didukung (mp4, webm, dll)</li>
+            <li>Salin file video ke dalam folder `/vfx`</li>
+            <li>Nama file sebaiknya deskriptif, contoh: `smoke_transition.mp4`</li>
+          </ol>
+        </div>
       </div>
-      <div
-        style="
-          display: flex;
-          align-items: center;
-          gap: 10px;
-          flex-direction: column;
-        "
-      >
-        <span class="file-count" id="vfx-count">(Loading...)</span>
-        <a href="vfx.html" class="home-btn"> Video FX </a>
+
+      <div class="quick-links">
+        <div class="quick-link">
+          <h3>Sound FX</h3>
+          <p>Jelajahi koleksi efek suara berkualitas tinggi</p>
+          <a href="sfx.html" class="btn-explore">Jelajahi Sound FX</a>
+        </div>
+        
+        <div class="quick-link">
+          <h3>Video FX</h3>
+          <p>Temukan efek video unik untuk konten visual Anda</p>
+          <a href="vfx.html" class="btn-explore">Jelajahi Video FX</a>
+        </div>
       </div>
+    </div>
+
+    <div class="footer">
+      <p>&copy; 2025 Aldimenur. Seluruh Hak Dilindungi.</p>
     </div>
 
     <script src="script.js"></script>
-    <div class="footer">
-      <p>&copy; 2025 Aldimenur. All Rights Reserved.</p>
-    </div>
   </body>
 </html>

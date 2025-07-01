@@ -1,8 +1,8 @@
 {
-  "name": "brokoli",
+  "name": "Firasat-SFX-VFX-Preview",
   "version": "1.0.0",
   "main": "main.js",
-  "homepage": "./",
+  "homepage": "public/index.html",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "electron .",
@@ -13,7 +13,8 @@
     "build": "electron-builder",
     "build-win": "electron-builder --win",
     "build-mac": "electron-builder --mac",
-    "build-linux": "electron-builder --linux"
+    "build-linux": "electron-builder --linux",
+    "pack": "electron-packager . Firasat-SFX-VFX-Preview --overwrite --platform=win32 --arch=x64 --prune=true --out=release-builds --ignore=sfx/ --ignore=vfx/ --ignore=music/"
   },
   "keywords": [
     "sfx",
@@ -26,13 +27,14 @@
   "license": "ISC",
   "description": "SFX and VFX Preview Application for Video Editors",
   "dependencies": {
-    "electron": "^37.1.0",
     "express": "^5.1.0",
     "nodemon": "^3.1.10"
   },
   "devDependencies": {
     "concurrently": "^8.2.2",
+    "electron": "^37.1.0",
     "electron-builder": "^24.13.3",
+    "electron-packager": "^17.1.2",
     "wait-on": "^7.2.0"
   },
   "build": {
@@ -43,6 +45,7 @@
     },
     "files": [
       "main.js",
+      "preload.js",
       "server.js",
       "public/**/*",
       "sfx/**/*",
@@ -52,11 +55,11 @@
     ],
     "win": {
       "target": "nsis",
-      "icon": "assets/icon.ico"
+      "icon": "assets/Ampeross-Qetto-Icon-developer.ico"
     },
     "mac": {
       "target": "dmg",
-      "icon": "assets/icon.icns"
+      "icon": "assets/edit-validated256_25237.icns"
     },
     "linux": {
       "target": "AppImage",

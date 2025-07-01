@@ -1,19 +1,66 @@
 {
   "name": "brokoli",
   "version": "1.0.0",
-  "main": "server.js",
-  "type": "module",
+  "main": "main.js",
+  "homepage": "./",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node server.js",
-    "dev": "nodemon server.js"
+    "start": "electron .",
+    "dev": "nodemon server.js",
+    "server": "node server.js",
+    "electron": "electron .",
+    "electron-dev": "concurrently \"npm run server\" \"wait-on http://localhost:3000 && electron .\"",
+    "build": "electron-builder",
+    "build-win": "electron-builder --win",
+    "build-mac": "electron-builder --mac",
+    "build-linux": "electron-builder --linux"
   },
-  "keywords": [],
+  "keywords": [
+    "sfx",
+    "vfx",
+    "preview",
+    "editor",
+    "electron"
+  ],
   "author": "",
   "license": "ISC",
-  "description": "",
+  "description": "SFX and VFX Preview Application for Video Editors",
   "dependencies": {
+    "electron": "^37.1.0",
     "express": "^5.1.0",
     "nodemon": "^3.1.10"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2",
+    "electron-builder": "^24.13.3",
+    "wait-on": "^7.2.0"
+  },
+  "build": {
+    "appId": "com.aldimenur.brokoli",
+    "productName": "Firasat SFX VFX Preview",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "main.js",
+      "server.js",
+      "public/**/*",
+      "sfx/**/*",
+      "vfx/**/*",
+      "music/**/*",
+      "node_modules/**/*"
+    ],
+    "win": {
+      "target": "nsis",
+      "icon": "assets/icon.ico"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "assets/icon.icns"
+    },
+    "linux": {
+      "target": "AppImage",
+      "icon": "assets/icon.png"
+    }
   }
 }

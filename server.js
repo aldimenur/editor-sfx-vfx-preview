@@ -1,13 +1,10 @@
 // server.js
-import express from "express";
-import fs from "fs";
-import path from "path";
-import { exec } from "child_process";
-import { fileURLToPath } from "url";
+const express = require("express");
+const fs = require("fs");
+const path = require("path");
+const { exec } = require("child_process");
 
-// Get the directory name of the current module
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
+// In CommonJS, __dirname is available globally
 
 const app = express();
 const PORT = process.env.PORT || 3000;

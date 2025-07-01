@@ -404,14 +404,7 @@ app.get("/api/open-music-location", (req, res) => {
   }
 });
 
-// Serve static files for sounds and VFX
-app.use("/sounds", express.static(path.join(__dirname, "sfx")));
-app.use("/vfx", express.static(path.join(__dirname, "vfx")));
-
-// Serve static files for Music
-app.use("/music", express.static(path.join(__dirname, "music")));
-
-// New API endpoint for file counts
+// API endpoint to count files
 app.get("/api/file-count", (req, res) => {
   const { type } = req.query;
   let directory;
@@ -458,6 +451,10 @@ app.get("/api/file-count", (req, res) => {
     res.status(500).json({ error: "Failed to count files", count: 0 });
   }
 });
+
+app.use("/sounds", express.static(path.join(__dirname, "sfx")));
+app.use("/vfx", express.static(path.join(__dirname, "vfx")));
+app.use("/music", express.static(path.join(__dirname, "music")));
 
 // Start the server
 const server = app.listen(PORT, () => {

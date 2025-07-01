@@ -1,4 +1,4 @@
-const { app, BrowserWindow, shell } = require("electron");
+const { app, BrowserWindow, shell, ipcMain } = require("electron");
 const path = require("path");
 const { spawn } = require("child_process");
 
@@ -11,6 +11,7 @@ function createWindow() {
     width: 1200,
     height: 800,
     webPreferences: {
+      preload: path.join(__dirname, "preload.js"),
       nodeIntegration: false,
       contextIsolation: true,
       enableRemoteModule: false,
@@ -50,6 +51,67 @@ function createWindow() {
   mainWindow.webContents.setWindowOpenHandler(({ url }) => {
     shell.openExternal(url);
     return { action: "deny" };
+  });
+
+  // Handle file open requests
+  ipcMain.handle("open-file-location", (event, fileName) => {
+    const filePath = path.join(__dirname, "sfx", fileName);
+    shell.showItemInFolder(filePath);
+  });
+
+  ipcMain.handle("open-vfx-location", (event, fileName) => {
+    const filePath = path.join(__dirname, "vfx", fileName);
+    shell.showItemInFolder(filePath);
+  });
+
+  ipcMain.handle("open-music-location", (event, fileName) => {
+    const filePath = path.join(__dirname, "music", fileName);
+    shell.showItemInFolder(filePath);
+  });
+
+  // New handler to get full file path for drag and drop
+  ipcMain.handle("get-full-file-path", (event, { fileName, category }) => {
+    let filePath;
+    switch (category) {
+      case "sfx":
+        filePath = path.join(__dirname, "sfx", fileName);
+        break;
+      case "vfx":
+        filePath = path.join(__dirname, "vfx", fileName);
+        break;
+      case "music":
+        filePath = path.join(__dirname, "music", fileName);
+        break;
+      default:
+        return null;
+    }
+    return filePath;
+  });
+
+  // Native file drag-and-drop handler
+  ipcMain.on("ondragstart", (event, { fileName, category }) => {
+    let filePath;
+    switch (category) {
+      case "sfx":
+        filePath = path.join(__dirname, "sfx", fileName);
+        break;
+      case "vfx":
+        filePath = path.join(__dirname, "vfx", fileName);
+        break;
+      case "music":
+        filePath = path.join(__dirname, "music", fileName);
+        break;
+      default:
+        return;
+    }
+
+    // Use application icon as drag icon (fallback if specific asset not found)
+    const iconPath = path.join(__dirname, "assets", "video.png");
+
+    event.sender.startDrag({
+      file: filePath,
+      icon: iconPath,
+    });
   });
 
   // Handle window closed

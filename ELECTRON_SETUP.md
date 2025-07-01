@@ -87,4 +87,24 @@ To customize the app icon, add these files to the `assets/` folder:
 - The app automatically starts an Express server on port 3000
 - External links (Instagram, WhatsApp) will open in your default browser
 - The server process is automatically terminated when you close the app
-- All your existing SFX/VFX files will be automatically detected 
+- All your existing SFX/VFX files will be automatically detected
+
+## Drag and Drop Functionality
+
+### Direct File Drag to Other Applications
+
+Each file now has a dedicated "Drag to App" button:
+
+- Click the "Drag to App" button next to the file
+- Drag the button into another application (e.g., Premiere Pro, After Effects)
+- The full file path will be transferred, allowing easy import of media files
+
+#### Button Colors
+- SFX files: Blue "Drag to App" button
+- VFX files: Orange "Drag to App" button
+- Music files: Purple "Drag to App" button
+
+### Tips
+- The cursor changes to a grab/grabbing icon to indicate draggable state
+- Works with SFX, VFX, and Music files
+- Compatible with most video editing and audio production software 

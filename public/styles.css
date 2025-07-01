@@ -519,3 +519,49 @@ button:disabled {
         width: 100%;
     }
 }
+
+.drag-btn {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 12px;
+    margin: 2px;
+    cursor: grab;
+    transition: background-color 0.3s;
+}
+
+.drag-btn:hover {
+    background-color: #45a049;
+}
+
+.drag-btn:active {
+    cursor: grabbing;
+}
+
+.drag-btn.sfx {
+    background-color: #2196F3;
+}
+
+.drag-btn.sfx:hover {
+    background-color: #1E88E5;
+}
+
+.drag-btn.vfx {
+    background-color: #FF9800;
+}
+
+.drag-btn.vfx:hover {
+    background-color: #F57C00;
+}
+
+.drag-btn.music {
+    background-color: #9C27B0;
+}
+
+.drag-btn.music:hover {
+    background-color: #7B1FA2;
+}

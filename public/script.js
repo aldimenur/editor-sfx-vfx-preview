@@ -74,59 +74,13 @@ function copyPath(fileName, type = "path", category = "sfx") {
 
 // Function to open file location
 function openFileLocation(fileName, category = "sfx") {
-  let apiEndpoint;
-  if (category === true || category === "vfx") {
-    apiEndpoint = "/api/open-vfx-location";
+  if (category === "sfx") {
+    window.electronAPI.openFileLocation(fileName);
+  } else if (category === "vfx") {
+    window.electronAPI.openVFXLocation(fileName);
   } else if (category === "music") {
-    apiEndpoint = "/api/open-music-location";
-  } else {
-    apiEndpoint = "/api/open-file-location";
+    window.electronAPI.openMusicLocation(fileName);
   }
-
-  fetch(`${apiEndpoint}?file=${encodeURIComponent(fileName)}`)
-    .then((res) => res.json())
-    .then((data) => {
-      const suffix =
-        category === "vfx" || category === true
-          ? ".vfx"
-          : category === "music"
-          ? ".music"
-          : "";
-      const openLocationBtn = document.querySelector(
-        `[data-file="${fileName}"].open-location-btn${suffix}`
-      );
-      if (!openLocationBtn) return;
-      if (data.success) {
-        openLocationBtn.textContent = "Location Opened!";
-        openLocationBtn.classList.add("copied");
-      } else {
-        openLocationBtn.textContent = "Error Opening";
-        openLocationBtn.classList.add("copied");
-      }
-      setTimeout(() => {
-        openLocationBtn.textContent = "Open Location";
-        openLocationBtn.classList.remove("copied");
-      }, 2000);
-    })
-    .catch((error) => {
-      console.error(error);
-      const suffix =
-        category === "vfx" || category === true
-          ? ".vfx"
-          : category === "music"
-          ? ".music"
-          : "";
-      const openLocationBtn = document.querySelector(
-        `[data-file="${fileName}"].open-location-btn${suffix}`
-      );
-      if (!openLocationBtn) return;
-      openLocationBtn.textContent = "Error Opening";
-      openLocationBtn.classList.add("copied");
-      setTimeout(() => {
-        openLocationBtn.textContent = "Open Location";
-        openLocationBtn.classList.remove("copied");
-      }, 2000);
-    });
 }
 
 // Update pagination controls
@@ -253,6 +207,7 @@ function loadSounds(
         try {
           const box = document.createElement("div");
           box.className = "wave-box";
+          box.draggable = true;
 
           const header = document.createElement("div");
           header.className = "wave-header";
@@ -290,9 +245,18 @@ function loadSounds(
             openFileLocation(sound.name)
           );
 
+          const dragBtn = document.createElement("button");
+          dragBtn.textContent = "Drag to App";
+          dragBtn.className = "drag-btn sfx";
+          dragBtn.draggable = true;
+          dragBtn.addEventListener("dragstart", (event) => {
+            handleDragStart(event, sound.name, "sfx");
+          });
+
           buttonContainer.appendChild(copyPathBtn);
           buttonContainer.appendChild(copyNameBtn);
           buttonContainer.appendChild(openLocationBtn);
+          buttonContainer.appendChild(dragBtn);
 
           header.appendChild(title);
           header.appendChild(buttonContainer);
@@ -385,6 +349,7 @@ function loadVfx(
       vfxData.videos.forEach((video) => {
         const box = document.createElement("div");
         box.className = "video-box";
+        box.draggable = true;
 
         const header = document.createElement("div");
         header.className = "wave-header";
@@ -402,7 +367,7 @@ function loadVfx(
         copyPathBtn.dataset.file = video.name;
         copyPathBtn.dataset.type = "path";
         copyPathBtn.addEventListener("click", () =>
-          copyPath(video.name, "path", true)
+          copyPath(video.name, "path", "vfx")
         );
 
         const copyNameBtn = document.createElement("button");
@@ -411,7 +376,7 @@ function loadVfx(
         copyNameBtn.dataset.file = video.name;
         copyNameBtn.dataset.type = "name";
         copyNameBtn.addEventListener("click", () =>
-          copyPath(video.name, "name", true)
+          copyPath(video.name, "name", "vfx")
         );
 
         const openLocationBtn = document.createElement("button");
@@ -419,12 +384,21 @@ function loadVfx(
         openLocationBtn.className = "open-location-btn vfx";
         openLocationBtn.dataset.file = video.name;
         openLocationBtn.addEventListener("click", () =>
-          openFileLocation(video.name, true)
+          openFileLocation(video.name, "vfx")
         );
+
+        const dragBtn = document.createElement("button");
+        dragBtn.textContent = "Drag to App";
+        dragBtn.className = "drag-btn vfx";
+        dragBtn.draggable = true;
+        dragBtn.addEventListener("dragstart", (event) => {
+          handleDragStart(event, video.name, "vfx");
+        });
 
         buttonContainer.appendChild(copyPathBtn);
         buttonContainer.appendChild(copyNameBtn);
         buttonContainer.appendChild(openLocationBtn);
+        buttonContainer.appendChild(dragBtn);
 
         header.appendChild(title);
         header.appendChild(buttonContainer);
@@ -488,6 +462,7 @@ function loadMusic(
       musicData.music.forEach((track, index) => {
         const box = document.createElement("div");
         box.className = "wave-box";
+        box.draggable = true;
 
         const header = document.createElement("div");
         header.className = "wave-header";
@@ -525,9 +500,18 @@ function loadMusic(
           openFileLocation(track.name, "music")
         );
 
+        const dragBtn = document.createElement("button");
+        dragBtn.textContent = "Drag to App";
+        dragBtn.className = "drag-btn music";
+        dragBtn.draggable = true;
+        dragBtn.addEventListener("dragstart", (event) => {
+          handleDragStart(event, track.name, "music");
+        });
+
         buttonContainer.appendChild(copyPathBtn);
         buttonContainer.appendChild(copyNameBtn);
         buttonContainer.appendChild(openLocationBtn);
+        buttonContainer.appendChild(dragBtn);
 
         header.appendChild(title);
         header.appendChild(buttonContainer);
@@ -828,4 +812,10 @@ function updateMusicPaginationControls() {
   prevPageBtn.disabled = currentMusicPage <= 1;
   nextPageBtn.disabled = currentMusicPage >= totalMusicPages;
   paginationInfo.textContent = `Page ${currentMusicPage} of ${totalMusicPages} (${musicData.total} tracks)`;
+}
+
+// Function to handle file drag start
+function handleDragStart(event, fileName, category) {
+  event.preventDefault(); // Prevent default to allow custom drag handling
+  window.electronAPI.startDrag(fileName, category);
 }

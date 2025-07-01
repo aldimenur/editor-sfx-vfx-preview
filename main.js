@@ -20,7 +20,7 @@ function createWindow() {
     icon: path.join(__dirname, "assets/icon.png"), // Add your app icon here if you have one
     show: false, // Don't show until ready
     titleBarStyle: "hiddenInset",
-    autoHideMenuBar: false,
+    autoHideMenuBar: true,
     titleBarOverlay: false,
   });
 

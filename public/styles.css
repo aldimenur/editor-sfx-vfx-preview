@@ -131,7 +131,9 @@ input[type="text"] {
 }
 
 .button-container {
-    display: flex;
+    display: grid;
+    width: 100%;
+    grid-template-columns: repeat(2, 1fr);
     gap: 5px;
 }
 
@@ -140,7 +142,7 @@ input[type="text"] {
     background-color: #333;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 6px 10px;
     border-radius: 4px;
     cursor: pointer;
     font-size: 0.8em;
@@ -524,13 +526,10 @@ button:disabled {
     background-color: #4CAF50;
     color: white;
     border: none;
-    padding: 5px 10px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 12px;
-    margin: 2px;
-    cursor: grab;
+    padding: 6px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.8em;
     transition: background-color 0.3s;
 }
 

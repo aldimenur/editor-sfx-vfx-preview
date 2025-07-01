@@ -18,20 +18,54 @@ app.use(express.static("public"));
 // Helper function to get files with pagination and search
 function getFiles(directory, query, page = 1, pageSize = 12) {
   try {
-    let files = fs
-      .readdirSync(directory)
-      .filter((file) => {
-        const lowercaseQuery = query.toLowerCase();
-        const allowedExtensions = [".mp3", ".wav", ".ogg", ".m4a"];
-        return (
-          allowedExtensions.some((ext) => file.toLowerCase().endsWith(ext)) &&
-          file.toLowerCase().includes(lowercaseQuery)
-        );
-      })
-      .map((file) => ({
-        name: file,
-        url: `/sounds/${file}`,
-      }));
+    let files = [];
+
+    // Recursively read files
+    const readRecursively = (dir) => {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+
+          if (entry.isDirectory()) {
+            readRecursively(fullPath);
+          } else {
+            try {
+              const relativePath = path.relative(directory, fullPath);
+
+              // Safely handle special characters in file paths
+              const safeRelativePath = relativePath
+                .split(path.sep)
+                .map((segment) => encodeURIComponent(segment))
+                .join("/");
+
+              files.push({
+                name: relativePath,
+                url: `/sounds/${safeRelativePath}`,
+                originalPath: fullPath,
+              });
+            } catch (fileError) {
+              console.error(`Error processing file ${fullPath}:`, fileError);
+            }
+          }
+        }
+      } catch (dirError) {
+        console.error(`Error reading directory ${dir}:`, dirError);
+      }
+    };
+
+    readRecursively(directory);
+
+    // Filter files based on query and extensions
+    files = files.filter((file) => {
+      const lowercaseQuery = query.toLowerCase();
+      const lowercaseFileName = file.name.toLowerCase();
+      const allowedExtensions = [".mp3", ".wav", ".ogg", ".m4a"];
+      return (
+        allowedExtensions.some((ext) => lowercaseFileName.endsWith(ext)) &&
+        lowercaseFileName.includes(lowercaseQuery)
+      );
+    });
 
     const total = files.length;
     const totalPages = Math.ceil(total / pageSize);
@@ -61,20 +95,57 @@ function getFiles(directory, query, page = 1, pageSize = 12) {
 // Helper function to get VFX files with pagination and search
 function getVfxFiles(directory, query, page = 1, pageSize = 6) {
   try {
-    let files = fs
-      .readdirSync(directory)
-      .filter((file) => {
-        const lowercaseQuery = query.toLowerCase();
-        const allowedExtensions = [".mp4", ".avi", ".mov", ".mkv", ".webm"];
-        return (
-          allowedExtensions.some((ext) => file.toLowerCase().endsWith(ext)) &&
-          file.toLowerCase().includes(lowercaseQuery)
-        );
-      })
-      .map((file) => ({
-        name: file,
-        url: `/${path.relative("public", directory)}/${file}`,
-      }));
+    let files = [];
+
+    // Recursively read files
+    const readRecursively = (dir) => {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+
+          if (entry.isDirectory()) {
+            readRecursively(fullPath);
+          } else {
+            try {
+              const relativePath = path.relative(directory, fullPath);
+
+              // Safely handle special characters in file paths
+              const safeRelativePath = relativePath
+                .split(path.sep)
+                .map((segment) => encodeURIComponent(segment))
+                .join("/");
+
+              files.push({
+                name: relativePath,
+                url: `/${path.relative(
+                  "public",
+                  directory
+                )}/${safeRelativePath}`,
+                originalPath: fullPath,
+              });
+            } catch (fileError) {
+              console.error(`Error processing file ${fullPath}:`, fileError);
+            }
+          }
+        }
+      } catch (dirError) {
+        console.error(`Error reading directory ${dir}:`, dirError);
+      }
+    };
+
+    readRecursively(directory);
+
+    // Filter files based on query and extensions
+    files = files.filter((file) => {
+      const lowercaseQuery = query.toLowerCase();
+      const lowercaseFileName = file.name.toLowerCase();
+      const allowedExtensions = [".mp4", ".avi", ".mov", ".mkv", ".webm"];
+      return (
+        allowedExtensions.some((ext) => lowercaseFileName.endsWith(ext)) &&
+        lowercaseFileName.includes(lowercaseQuery)
+      );
+    });
 
     const total = files.length;
     const totalPages = Math.ceil(total / pageSize);
@@ -93,6 +164,83 @@ function getVfxFiles(directory, query, page = 1, pageSize = 6) {
     console.error("Error reading VFX directory:", error);
     return {
       videos: [],
+      total: 0,
+      currentPage: 1,
+      totalPages: 1,
+      pageSize,
+    };
+  }
+}
+
+// Helper function to get Music files with pagination and search
+function getMusicFiles(directory, query, page = 1, pageSize = 12) {
+  try {
+    let files = [];
+
+    // Recursively read files
+    const readRecursively = (dir) => {
+      try {
+        const entries = fs.readdirSync(dir, { withFileTypes: true });
+        for (const entry of entries) {
+          const fullPath = path.join(dir, entry.name);
+
+          if (entry.isDirectory()) {
+            readRecursively(fullPath);
+          } else {
+            try {
+              const relativePath = path.relative(directory, fullPath);
+
+              // Safely handle special characters in file paths
+              const safeRelativePath = relativePath
+                .split(path.sep)
+                .map((segment) => encodeURIComponent(segment))
+                .join("/");
+
+              files.push({
+                name: relativePath,
+                url: `/music/${safeRelativePath}`,
+                originalPath: fullPath,
+              });
+            } catch (fileError) {
+              console.error(`Error processing file ${fullPath}:`, fileError);
+            }
+          }
+        }
+      } catch (dirError) {
+        console.error(`Error reading directory ${dir}:`, dirError);
+      }
+    };
+
+    readRecursively(directory);
+
+    // Filter files based on query and extensions
+    files = files.filter((file) => {
+      const lowercaseQuery = query.toLowerCase();
+      const lowercaseFileName = file.name.toLowerCase();
+      const allowedExtensions = [".mp3", ".wav", ".ogg", ".m4a"];
+      return (
+        allowedExtensions.some((ext) => lowercaseFileName.endsWith(ext)) &&
+        lowercaseFileName.includes(lowercaseQuery)
+      );
+    });
+
+    const total = files.length;
+    const totalPages = Math.ceil(total / pageSize);
+    const startIndex = (page - 1) * pageSize;
+    const endIndex = startIndex + pageSize;
+    const paginatedFiles = files.slice(startIndex, endIndex);
+
+    return {
+      music: paginatedFiles,
+      total,
+      currentPage: page,
+      totalPages,
+      pageSize,
+    };
+  } catch (error) {
+    console.error("Error reading music directory:", error);
+    return {
+      music: [],
       total: 0,
       currentPage: 1,
       totalPages: 1,
@@ -125,6 +273,18 @@ app.get("/api/vfx", (req, res) => {
   res.json(result);
 });
 
+// API endpoint for Music
+app.get("/api/music", (req, res) => {
+  const { q = "", page = 1, pageSize = 12 } = req.query;
+  const result = getMusicFiles(
+    path.join(__dirname, "music"),
+    q,
+    parseInt(page),
+    parseInt(pageSize)
+  );
+  res.json(result);
+});
+
 // API endpoint to copy file path
 app.get("/api/copy-path", (req, res) => {
   const { file, type } = req.query;
@@ -148,6 +308,19 @@ app.get("/api/copy-vfx-path", (req, res) => {
     res.json({ path: fullPath });
   } catch (error) {
     res.status(500).json({ error: "Could not get VFX file path" });
+  }
+});
+
+// API endpoint to copy Music file path
+app.get("/api/copy-music-path", (req, res) => {
+  const { file, type } = req.query;
+  const musicPath = path.join(__dirname, "music", file);
+
+  try {
+    const fullPath = type === "path" ? musicPath : file;
+    res.json({ path: fullPath });
+  } catch (error) {
+    res.status(500).json({ error: "Could not get Music file path" });
   }
 });
 
@@ -207,9 +380,39 @@ app.get("/api/open-vfx-location", (req, res) => {
   }
 });
 
+// API endpoint to open Music file location
+app.get("/api/open-music-location", (req, res) => {
+  const { file } = req.query;
+  const musicPath = path.join(__dirname, "music", file);
+
+  try {
+    const command =
+      process.platform === "win32"
+        ? `explorer /select,"${musicPath}"`
+        : process.platform === "darwin"
+        ? `open -R "${musicPath}"`
+        : `xdg-open "$(dirname "${musicPath}")"`;
+
+    exec(command, (error) => {
+      if (error) {
+        console.error("Error opening Music file location:", error);
+        res.json({ success: false });
+      } else {
+        res.json({ success: true });
+      }
+    });
+  } catch (error) {
+    console.error("Error opening Music file location:", error);
+    res.status(500).json({ success: false });
+  }
+});
+
 // Serve static files for sounds and VFX
 app.use("/sounds", express.static(path.join(__dirname, "sfx")));
 app.use("/vfx", express.static(path.join(__dirname, "vfx")));
+
+// Serve static files for Music
+app.use("/music", express.static(path.join(__dirname, "music")));
 
 // New API endpoint for file counts
 app.get("/api/file-count", (req, res) => {
@@ -223,8 +426,13 @@ app.get("/api/file-count", (req, res) => {
   } else if (type === "vfx") {
     directory = path.join(__dirname, "vfx");
     fileExtension = ".mp4";
+  } else if (type === "music") {
+    directory = path.join(__dirname, "music");
+    fileExtension = ".mp3";
   } else {
-    return res.status(400).json({ error: 'Invalid type. Use "sfx" or "vfx".' });
+    return res
+      .status(400)
+      .json({ error: 'Invalid type. Use "sfx", "vfx", or "music".' });
   }
 
   try {

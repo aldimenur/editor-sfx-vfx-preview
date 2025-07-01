@@ -1,30 +1,30 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>Sound FX - Firasat</title>
+    <title>Music - Firasat</title>
     <link rel="stylesheet" href="styles.css" />
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"
+    />
   </head>
   <body>
-    <div id="sfx-tab" class="tab-content active">
+    <div id="music-tab" class="tab-content active">
       <div class="two-column-layout">
         <div class="controls-column">
-          <h1>Sound FX Preview</h1>
+          <h1>Music Preview</h1>
           <div class="controls-container">
-            <!-- label for search -->
-            <label for="search-sfx">Search:</label>
-            <input type="text" id="search-sfx" placeholder="Search sound..." />
+            <label for="search-music">Search:</label>
+            <input type="text" id="search-music" placeholder="Search music..." />
             <div class="view-controls">
-              <!-- label for page size and layout select -->
-              <label for="page-size-sfx">Page Size:</label>
-              <select id="page-size-sfx">
+              <label for="page-size-music">Page Size:</label>
+              <select id="page-size-music">
                 <option value="6">6 per page</option>
-                <option value="12">12 per page</option>
+                <option value="12" selected>12 per page</option>
                 <option value="24">24 per page</option>
               </select>
-              <label for="layout-select-sfx">Layout:</label>
-              <select id="layout-select-sfx">
+              <label for="layout-select-music">Layout:</label>
+              <select id="layout-select-music">
                 <option value="1">1 Column</option>
                 <option value="2" selected>2 Columns</option>
                 <option value="3">3 Columns</option>
@@ -32,10 +32,10 @@
               </select>
             </div>
             <div class="pagination">
-              <button id="prevPage" disabled>Previous</button>
-              <button id="nextPage" disabled>Next</button>
+              <button id="prevPageMusic" disabled>Previous</button>
+              <button id="nextPageMusic" disabled>Next</button>
             </div>
-            <div class="pagination-info" id="paginationInfo"></div>
+            <div class="pagination-info" id="paginationInfoMusic"></div>
           </div>
           <div class="tabs">
             <a href="index.html" class="tab-btn">Home</a>
@@ -43,11 +43,9 @@
             <a href="music.html" class="tab-btn">Music</a>
             <a href="vfx.html" class="tab-btn">Video FX</a>
           </div>
-
-         
         </div>
         <div class="results-column">
-          <div id="results" class="container"></div>
+          <div id="music-results" class="container"></div>
         </div>
       </div>
     </div>
@@ -59,14 +57,22 @@
       <div class="contact-section">
         <h4>Ada Kendala atau Ingin Request Fitur?</h4>
         <div class="contact-buttons">
-          <a href="https://www.instagram.com/aldsyahh" target="_blank" class="contact-btn instagram">
+          <a
+            href="https://www.instagram.com/aldsyahh"
+            target="_blank"
+            class="contact-btn instagram"
+          >
             <i class="fab fa-instagram"></i> Instagram
           </a>
-          <a href="https://wa.me/628113112349" target="_blank" class="contact-btn whatsapp">
+          <a
+            href="https://wa.me/628113112349"
+            target="_blank"
+            class="contact-btn whatsapp"
+          >
             <i class="fab fa-whatsapp"></i> WhatsApp
           </a>
         </div>
       </div>
     </div>
   </body>
-</html>
+</html> 

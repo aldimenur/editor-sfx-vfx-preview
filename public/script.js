@@ -29,18 +29,38 @@ let currentVfxPageSize = parseInt(getUrlParameter("vfxPageSize") || 6);
 let currentLayout = parseInt(getUrlParameter("layout") || 2);
 let data = {};
 let vfxData = {};
+let currentMusicPage = parseInt(getUrlParameter("musicPage") || 1);
+let totalMusicPages = 1;
+let currentMusicPageSize = parseInt(getUrlParameter("musicPageSize") || 12);
+let musicData = {};
 
 // Function to copy file path or name
-function copyPath(fileName, type = "path", isVfx = false) {
-  const apiEndpoint = isVfx ? "/api/copy-vfx-path" : "/api/copy-path";
+function copyPath(fileName, type = "path", category = "sfx") {
+  let apiEndpoint;
+  if (category === true || category === "vfx") {
+    // Backward compatibility for boolean true representing VFX
+    apiEndpoint = "/api/copy-vfx-path";
+  } else if (category === "music") {
+    apiEndpoint = "/api/copy-music-path";
+  } else {
+    apiEndpoint = "/api/copy-path";
+  }
+
   fetch(`${apiEndpoint}?file=${encodeURIComponent(fileName)}&type=${type}`)
     .then((res) => res.json())
     .then((data) => {
-      let textToCopy = type === "path" ? data.path : fileName;
+      const textToCopy = type === "path" ? data.path : fileName;
       navigator.clipboard.writeText(textToCopy).then(() => {
+        const suffix =
+          category === "vfx" || category === true
+            ? ".vfx"
+            : category === "music"
+            ? ".music"
+            : "";
         const copyBtn = document.querySelector(
-          `[data-file="${fileName}"][data-type="${type}"]${isVfx ? ".vfx" : ""}`
+          `[data-file="${fileName}"][data-type="${type}"]${suffix}`
         );
+        if (!copyBtn) return;
         copyBtn.textContent = type === "path" ? "Copied Path!" : "Copied Name!";
         copyBtn.classList.add("copied");
         setTimeout(() => {
@@ -53,16 +73,29 @@ function copyPath(fileName, type = "path", isVfx = false) {
 }
 
 // Function to open file location
-function openFileLocation(fileName, isVfx = false) {
-  const apiEndpoint = isVfx
-    ? "/api/open-vfx-location"
-    : "/api/open-file-location";
+function openFileLocation(fileName, category = "sfx") {
+  let apiEndpoint;
+  if (category === true || category === "vfx") {
+    apiEndpoint = "/api/open-vfx-location";
+  } else if (category === "music") {
+    apiEndpoint = "/api/open-music-location";
+  } else {
+    apiEndpoint = "/api/open-file-location";
+  }
+
   fetch(`${apiEndpoint}?file=${encodeURIComponent(fileName)}`)
     .then((res) => res.json())
     .then((data) => {
+      const suffix =
+        category === "vfx" || category === true
+          ? ".vfx"
+          : category === "music"
+          ? ".music"
+          : "";
       const openLocationBtn = document.querySelector(
-        `[data-file="${fileName}"].open-location-btn${isVfx ? ".vfx" : ""}`
+        `[data-file="${fileName}"].open-location-btn${suffix}`
       );
+      if (!openLocationBtn) return;
       if (data.success) {
         openLocationBtn.textContent = "Location Opened!";
         openLocationBtn.classList.add("copied");
@@ -77,9 +110,16 @@ function openFileLocation(fileName, isVfx = false) {
     })
     .catch((error) => {
       console.error(error);
+      const suffix =
+        category === "vfx" || category === true
+          ? ".vfx"
+          : category === "music"
+          ? ".music"
+          : "";
       const openLocationBtn = document.querySelector(
-        `[data-file="${fileName}"].open-location-btn${isVfx ? ".vfx" : ""}`
+        `[data-file="${fileName}"].open-location-btn${suffix}`
       );
+      if (!openLocationBtn) return;
       openLocationBtn.textContent = "Error Opening";
       openLocationBtn.classList.add("copied");
       setTimeout(() => {
@@ -152,6 +192,20 @@ function updatePageSize(pageType, size) {
       document.getElementById("search-vfx").value,
       currentVfxPage,
       currentVfxPageSize
+    );
+  } else if (pageType === "music") {
+    currentMusicPageSize = size;
+    currentMusicPage = 1; // Reset to first page
+
+    updateUrlParameters({
+      musicPageSize: size,
+      musicPage: 1,
+    });
+
+    loadMusic(
+      document.getElementById("search-music").value,
+      currentMusicPage,
+      currentMusicPageSize
     );
   }
 }
@@ -394,6 +448,135 @@ function loadVfx(
     });
 }
 
+// Load Music with optional search and pagination
+function loadMusic(
+  query = "",
+  page = currentMusicPage,
+  pageSize = currentMusicPageSize
+) {
+  const results = document.getElementById("music-results");
+  if (!results) return; // safety check
+  results.innerHTML = "Loading music...";
+
+  updateUrlParameters({
+    musicQ: query || null,
+    musicPage: page,
+    musicPageSize: pageSize,
+  });
+
+  fetch(
+    `/api/music?q=${encodeURIComponent(
+      query
+    )}&page=${page}&pageSize=${pageSize}`
+  )
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP error! status: ${res.status}`);
+      return res.json();
+    })
+    .then((responseData) => {
+      musicData = responseData;
+      currentMusicPage = musicData.currentPage;
+      totalMusicPages = musicData.totalPages;
+
+      results.innerHTML = "";
+
+      if (musicData.music.length === 0) {
+        results.innerHTML = "No music found.";
+        return;
+      }
+
+      musicData.music.forEach((track, index) => {
+        const box = document.createElement("div");
+        box.className = "wave-box";
+
+        const header = document.createElement("div");
+        header.className = "wave-header";
+
+        const title = document.createElement("div");
+        title.innerText = track.name;
+        title.className = "wave-title";
+
+        const buttonContainer = document.createElement("div");
+        buttonContainer.className = "button-container";
+
+        const copyPathBtn = document.createElement("button");
+        copyPathBtn.textContent = "Copy Path";
+        copyPathBtn.className = "copy-btn music";
+        copyPathBtn.dataset.file = track.name;
+        copyPathBtn.dataset.type = "path";
+        copyPathBtn.addEventListener("click", () =>
+          copyPath(track.name, "path", "music")
+        );
+
+        const copyNameBtn = document.createElement("button");
+        copyNameBtn.textContent = "Copy Name";
+        copyNameBtn.className = "copy-btn music";
+        copyNameBtn.dataset.file = track.name;
+        copyNameBtn.dataset.type = "name";
+        copyNameBtn.addEventListener("click", () =>
+          copyPath(track.name, "name", "music")
+        );
+
+        const openLocationBtn = document.createElement("button");
+        openLocationBtn.textContent = "Open Location";
+        openLocationBtn.className = "open-location-btn music";
+        openLocationBtn.dataset.file = track.name;
+        openLocationBtn.addEventListener("click", () =>
+          openFileLocation(track.name, "music")
+        );
+
+        buttonContainer.appendChild(copyPathBtn);
+        buttonContainer.appendChild(copyNameBtn);
+        buttonContainer.appendChild(openLocationBtn);
+
+        header.appendChild(title);
+        header.appendChild(buttonContainer);
+
+        const waveformEl = document.createElement("div");
+        waveformEl.className = "waveform";
+        waveformEl.id = `music-waveform-${index}`;
+
+        box.appendChild(header);
+        box.appendChild(waveformEl);
+        results.appendChild(box);
+
+        const wavesurfer = WaveSurfer.create({
+          container: `#music-waveform-${index}`,
+          waveColor: "#999",
+          progressColor: "#333",
+          height: 100,
+          barWidth: 2,
+          responsive: true,
+          fillParent: true,
+        });
+
+        wavesurfer.on("error", (error) => {
+          console.error(`Error loading track ${track.name}:`, error);
+          const waveformEl = document.getElementById(`music-waveform-${index}`);
+          if (waveformEl) {
+            waveformEl.innerHTML = `<div class="error">Failed to load track: ${track.name}</div>`;
+          }
+        });
+
+        wavesurfer.load(track.url);
+
+        waveformEl.addEventListener("mouseenter", () => {
+          wavesurfer.play();
+        });
+        waveformEl.addEventListener("mouseleave", () => {
+          wavesurfer.pause();
+        });
+      });
+
+      updateMusicPaginationControls();
+      updateGridLayout(currentLayout);
+    })
+    .catch((error) => {
+      console.error("Error loading music:", error);
+      results.innerHTML = `Error loading music: ${error.message}`;
+    });
+}
+
 // Function to fetch file counts
 function fetchFileCounts() {
   // Only run on the home page
@@ -559,6 +742,52 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  if (document.getElementById("search-music")) {
+    const searchMusic = document.getElementById("search-music");
+    const prevPageMusicBtn = document.getElementById("prevPageMusic");
+    const nextPageMusicBtn = document.getElementById("nextPageMusic");
+    const pageSizeSelectMusic = document.getElementById("page-size-music");
+    const layoutSelectMusic = document.getElementById("layout-select-music");
+
+    searchMusic.value = getUrlParameter("musicQ") || "";
+
+    loadMusic(searchMusic.value, currentMusicPage, currentMusicPageSize);
+
+    if (pageSizeSelectMusic) {
+      pageSizeSelectMusic.value = currentMusicPageSize;
+      pageSizeSelectMusic.addEventListener("change", (e) => {
+        updatePageSize("music", parseInt(e.target.value));
+      });
+    }
+
+    if (layoutSelectMusic) {
+      layoutSelectMusic.value = currentLayout;
+      layoutSelectMusic.addEventListener("change", (e) => {
+        currentLayout = parseInt(e.target.value);
+        updateGridLayout(currentLayout);
+      });
+    }
+
+    searchMusic.addEventListener("input", () => {
+      currentMusicPage = 1;
+      loadMusic(searchMusic.value, currentMusicPage, currentMusicPageSize);
+    });
+
+    prevPageMusicBtn.addEventListener("click", () => {
+      if (currentMusicPage > 1) {
+        currentMusicPage--;
+        loadMusic(searchMusic.value, currentMusicPage, currentMusicPageSize);
+      }
+    });
+
+    nextPageMusicBtn.addEventListener("click", () => {
+      if (currentMusicPage < totalMusicPages) {
+        currentMusicPage++;
+        loadMusic(searchMusic.value, currentMusicPage, currentMusicPageSize);
+      }
+    });
+  }
+
   // Fetch file counts
   fetchFileCounts();
 });
@@ -583,6 +812,20 @@ document.querySelectorAll(".tab-btn").forEach((btn) => {
       loadSounds();
     } else if (btn.dataset.tab === "vfx") {
       loadVfx();
+    } else if (btn.dataset.tab === "music") {
+      loadMusic();
     }
   });
 });
+
+// Update pagination controls for Music
+function updateMusicPaginationControls() {
+  const prevPageBtn = document.getElementById("prevPageMusic");
+  const nextPageBtn = document.getElementById("nextPageMusic");
+  const paginationInfo = document.getElementById("paginationInfoMusic");
+  if (!prevPageBtn || !nextPageBtn || !paginationInfo) return;
+
+  prevPageBtn.disabled = currentMusicPage <= 1;
+  nextPageBtn.disabled = currentMusicPage >= totalMusicPages;
+  paginationInfo.textContent = `Page ${currentMusicPage} of ${totalMusicPages} (${musicData.total} tracks)`;
+}

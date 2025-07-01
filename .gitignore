@@ -50,6 +50,8 @@ sfx/*
 !sfx/.gitkeep
 vfx/*
 !vfx/.gitkeep 
+music/*
+!music/.gitkeep
 
 package-lock.json
 
